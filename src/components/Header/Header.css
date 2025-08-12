@@ -1,0 +1,25 @@
+.header {
+    background: silver;
+    padding: 20px;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+}
+
+.menu {
+    display: flex;
+    gap: 20px;
+}
+
+.menu a {
+    padding: 10px 20px;
+    border: 1px solid blue;
+    border-radius: 4px;
+}
+
+.menu a:hover {
+    background: blue;
+    color: white;
+}
