@@ -116,48 +116,34 @@ function App() {
   };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column'
-    }}>
+    <div className="min-h-screen flex flex-col">
       <Header isAuthenticated={isAuthenticated} user={user} onSignOut={handleSignOut} />
-      <div style={{ flex: 1 }}>
+      <div className="flex-1">
         <Routes>
-          <Route path="/sign-in" element={<Auth />} />
+          <Route path="/sign-in" element={
+            <div className="min-h-[80vh] flex items-center justify-center bg-gradient-to-br from-[#a2d5c6] to-[#07689f]">
+              <Auth />
+            </div>
+          } />
           <Route
             path="/trips"
             element={
-              <TripList
-                trips={trips}
-                onEdit={handleEditTrip}
-                onDelete={handleDeleteTrip}
-                onToggleDone={handleToggleDone}
-              />
+              <div className="flex flex-col items-center justify-center py-8">
+                <TripList
+                  trips={trips}
+                  onEdit={handleEditTrip}
+                  onDelete={handleDeleteTrip}
+                  onToggleDone={handleToggleDone}
+                />
+              </div>
             }
           />
           <Route
             path="/"
             element={
               isAuthenticated ? (
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'flex-start',
-                    gap: '2rem',
-                    margin: '2rem auto',
-                    maxWidth: 1100,
-                  }}
-                >
-                  <div style={{
-                    flex: '0 0 400px',
-                    background: 'white',
-                    borderRadius: 12,
-                    boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-                    padding: '1.5rem',
-                    minWidth: 320,
-                  }}>
+                <div className="flex justify-center items-start gap-8 mx-auto my-8 max-w-[1100px]">
+                  <div className="flex-shrink-0 min-w-[320px] w-[400px] bg-white rounded-xl shadow-lg p-6">
                     <TripForm
                       user={user}
                       onSubmit={handleAddTrip}
@@ -165,16 +151,7 @@ function App() {
                       onLogout={handleSignOut}
                     />
                   </div>
-                  <div style={{
-                    flex: 1,
-                    background: 'white',
-                    borderRadius: 12,
-                    boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-                    padding: '1.5rem',
-                    maxHeight: 'calc(100vh - 96px)', // 48px header + 2*24px margin (nebo uprav dle potřeby)
-                    overflowY: 'auto',
-                    marginTop: 48, // přidáno odsazení pod header
-                  }}>
+                  <div className="flex-1 bg-white rounded-xl shadow-lg p-6 max-h-[calc(100vh-96px)] overflow-y-auto mt-12">
                     <TripList
                       trips={trips}
                       onEdit={handleEditTrip}
@@ -190,7 +167,7 @@ function App() {
           />
         </Routes>
       </div>
-       <Footer />
+      <Footer />
     </div>
   );
 }

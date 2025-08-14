@@ -252,7 +252,7 @@ export default function TripForm({
 // 🎨 Styly
 const formStyle = {
   position: 'fixed',
-  top: 48, // výška headeru v px
+  top: 115, // výška headeru v px
   left: 24, // více doleva, odsazení od levého okraje
   right: 'auto', // zarovnání vlevo, ne na střed
   zIndex: 999,

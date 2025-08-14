@@ -1,9 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 html { box-sizing: border-box;}
-  *, ::before, ::after { box-sizing: inherit;
-}
-
+*, ::before, ::after { box-sizing: inherit; }
 
 body {
-    font-family: "Inter", sans-serif;
-    font-optical-sizing: auto;
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+  min-height: 100vh;
+  background: url('/mountain.jpg') no-repeat center center fixed, linear-gradient(135deg, #a2d5c6, #07689f);
+  background-size: cover;
+  position: relative;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+  background: url('/mountains.svg') no-repeat bottom center;
+  background-size: cover;
+  opacity: 0.25;
 }

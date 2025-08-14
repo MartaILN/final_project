@@ -53,113 +53,53 @@ export default function Auth() {
   };
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '100vh',
-        background: 'linear-gradient(135deg, #a2d5c6, #07689f)',
-        fontFamily: 'Arial, sans-serif',
-      }}
-    >
-      <div
-        style={{
-          backgroundColor: 'white',
-          padding: '2rem',
-          borderRadius: '12px',
-          boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
-          maxWidth: '400px',
-          width: '100%',
-        }}
-      >
-        <h2 style={{ color: '#07689f', textAlign: 'center' }}>
-          {mode === 'login' ? 'Přihlášení' : 'Registrace'}
-        </h2>
-
-        <form onSubmit={handleAuth}>
-          <label htmlFor="email" style={{ display: 'block', marginBottom: '0.5rem' }}>
-            E-mail
-          </label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Zadej e-mail"
-            style={{
-              padding: '0.75rem',
-              width: '100%',
-              borderRadius: '6px',
-              border: '1px solid #ccc',
-              marginBottom: '1rem',
-              fontSize: '1rem',
-              boxSizing: 'border-box',
-            }}
-          />
-
-          <label htmlFor="password" style={{ display: 'block', marginBottom: '0.5rem' }}>
-            Heslo
-          </label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Zadej heslo"
-            style={{
-              padding: '0.75rem',
-              width: '100%',
-              borderRadius: '6px',
-              border: '1px solid #ccc',
-              marginBottom: '1rem',
-              fontSize: '1rem',
-              boxSizing: 'border-box',
-            }}
-          />
-
-          <button
-            type="submit"
-            disabled={isLoading}
-            style={{
-              backgroundColor: mode === 'login' ? '#40a798' : '#07689f',
-              color: 'white',
-              border: 'none',
-              padding: '0.75rem',
-              borderRadius: '6px',
-              width: '100%',
-              fontSize: '1rem',
-              cursor: isLoading ? 'not-allowed' : 'pointer',
-              transition: 'background-color 0.3s ease',
-              marginBottom: '0.5rem',
-              boxSizing: 'border-box',
-            }}
-          >
-            {isLoading ? 'Probíhá...' : mode === 'login' ? 'Přihlásit se' : 'Registrovat'}
-          </button>
-        </form>
-
-        <p style={{ color: '#07689f', textAlign: 'center' }}>{msg}</p>
-
-        <button
-          onClick={() => {
-            setMode(mode === 'login' ? 'signup' : 'login');
-            setMsg('');
-          }}
-          style={{
-            backgroundColor: '#eee',
-            border: 'none',
-            padding: '0.5rem',
-            borderRadius: '6px',
-            width: '100%',
-            fontSize: '0.9rem',
-            cursor: 'pointer',
-            boxSizing: 'border-box',
-          }}
-        >
-          {mode === 'login' ? 'Nemáš účet? Registruj se' : 'Už máš účet? Přihlas se'}
-        </button>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#a2d5c6] to-[#07689f] font-sans">
+  <div className="w-[400px] h-[350px] p-8 rounded-[10px] shadow-lg bg-[#f5f5dc] flex flex-col justify-center">
+        <h2 className="text-2xl font-bold mb-6 text-center text-[#07689f]">Přihlášení</h2>
+          <form onSubmit={handleAuth} className="w-full flex flex-col gap-4">
+            <div className="flex flex-col items-center w-full">
+              <label htmlFor="email" className="font-semibold text-[#07689f] mb-[4px] text-left w-[300px]">E-mail</label>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Zadej e-mail"
+                className="w-[300px] h-[30px] px-4 rounded-[4px] border border-gray-200 bg-[#f5f5dc] focus:outline-none text-base mx-auto block mb-[10px]"
+              />
+            </div>
+            <div className="flex flex-col items-center w-full">
+              <label htmlFor="password" className="font-semibold text-[#07689f] mb-[4px] text-left w-[300px]">Heslo</label>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Zadej heslo"
+                className="w-[300px] h-[30px] px-4 rounded-[4px] border border-gray-200 bg-[#f5f5dc] focus:outline-none text-base mx-auto block mb-[10px]"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className={`w-[300px] h-[30px] rounded-[4px] text-base font-bold transition-colors duration-200 ${mode === 'login' ? 'bg-[#40a798] hover:bg-[#359184] text-white' : 'bg-[#07689f] hover:bg-[#43c6ac] text-white'} shadow ${isLoading ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'} border-0 mx-auto block mb-[10px]`}
+            >
+              {isLoading ? 'Probíhá...' : mode === 'login' ? 'Přihlásit se' : 'Registrovat'}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setMode(mode === 'login' ? 'signup' : 'login');
+                setMsg('');
+              }}
+              className="w-[300px] h-[30px] rounded-[4px] bg-[#eee] text-[#07689f] font-semibold text-base hover:bg-[#a2d5c6] transition-colors border-0 mx-auto block mb-[10px] mt-[5px]"
+            >
+              {mode === 'login' ? 'Nemáš účet? Registruj se' : 'Už máš účet? Přihlas se'}
+            </button>
+          </form>
+          <p className="text-[#07689f] text-center min-h-[24px]">{msg}</p>
+        </div>
       </div>
-    </div>
+
   );
 }
