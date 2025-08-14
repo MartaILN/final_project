@@ -42,11 +42,47 @@ export default function TripList({
                 }}
               />
               <span>
-                {trip.date}: {trip.start} → {trip.destination} ({trip.transport})
+                {trip.date} – {trip.returnDate}<br />
+                {trip.start} → {trip.destination} ({trip.transport})
               </span>
             </label>
-            <small>{trip.note}</small>
-            <br />
+            {(() => {
+              let activities = [];
+              if (Array.isArray(trip.activities)) {
+                activities = trip.activities;
+              } else if (typeof trip.activities === 'string' && trip.activities) {
+                try { activities = JSON.parse(trip.activities); } catch {}
+              }
+              return activities.length > 0 ? (
+                <div style={{ margin: '0.5rem 0' }}>
+                  <strong>Aktivity:</strong>
+                  <ul style={{ margin: 0, paddingLeft: '1.2rem' }}>
+                    {activities.map((a, i) => a && <li key={i}>{a}</li>)}
+                  </ul>
+                </div>
+              ) : null;
+            })()}
+            {(() => {
+              let links = [];
+              if (Array.isArray(trip.links)) {
+                links = trip.links;
+              } else if (typeof trip.links === 'string' && trip.links) {
+                try { links = JSON.parse(trip.links); } catch {}
+              }
+              return links.length > 0 ? (
+                <div style={{ margin: '0.5rem 0' }}>
+                  <strong>Odkazy:</strong>
+                  <ul style={{ margin: 0, paddingLeft: '1.2rem' }}>
+                    {links.map((l, i) => l && <li key={i}><a href={l} target="_blank" rel="noopener noreferrer">{l}</a></li>)}
+                  </ul>
+                </div>
+              ) : null;
+            })()}
+            {trip.note && (
+              <div style={{ wordBreak: 'break-word', whiteSpace: 'pre-line', overflowWrap: 'anywhere' }}>
+                <strong>Poznámka:</strong> {trip.note}
+              </div>
+            )}
             <button
               onClick={() => onEdit(trip)}
               style={{
