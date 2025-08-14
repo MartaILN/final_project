@@ -116,12 +116,14 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div
+      className="min-h-screen flex flex-col"
+    >
       <Header isAuthenticated={isAuthenticated} user={user} onSignOut={handleSignOut} />
       <div className="flex-1">
         <Routes>
           <Route path="/sign-in" element={
-            <div className="min-h-[80vh] flex items-center justify-center bg-gradient-to-br from-[#a2d5c6] to-[#07689f]">
+            <div className="min-h-[80vh] flex items-center justify-center">
               <Auth />
             </div>
           } />
@@ -142,7 +144,7 @@ function App() {
             path="/"
             element={
               isAuthenticated ? (
-                <div className="flex justify-center items-start gap-8 mx-auto my-8 max-w-[1100px]">
+                <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'flex-start', gap: '150px', margin: '32px auto', maxWidth: '1600px' }}>
                   <div className="flex-shrink-0 min-w-[320px] w-[400px] bg-white rounded-xl shadow-lg p-6">
                     <TripForm
                       user={user}
@@ -151,7 +153,7 @@ function App() {
                       onLogout={handleSignOut}
                     />
                   </div>
-                  <div className="flex-1 bg-white rounded-xl shadow-lg p-6 max-h-[calc(100vh-96px)] overflow-y-auto mt-12">
+                  <div className="flex-1 bg-white rounded-xl shadow-lg p-6" style={{ height: '90vh', marginTop: '115px', overflowY: 'auto' }}>
                     <TripList
                       trips={trips}
                       onEdit={handleEditTrip}

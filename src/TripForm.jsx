@@ -11,10 +11,18 @@ export default function TripForm({
     destination: '',
     date: '',
     returnDate: '',
+    budget: {
+      accommodation: '',
+      transport: '',
+      food: '',
+      activities: '',
+      other: ''
+    },
     note: '',
     transport: '',
     activities: [''],
     links: [''],
+    public: false,
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -45,8 +53,18 @@ export default function TripForm({
         ...editingTrip,
         date: editingTrip.date ? editingTrip.date.split('T')[0] : '',
         returnDate: editingTrip.returnDate ? editingTrip.returnDate.split('T')[0] : '',
+        budget: typeof editingTrip.budget === 'object' && editingTrip.budget !== null
+          ? editingTrip.budget
+          : {
+              accommodation: '',
+              transport: '',
+              food: '',
+              activities: '',
+              other: ''
+            },
         activities,
         links,
+        public: editingTrip.public || false,
       });
       setErrors({});
     }
@@ -67,7 +85,13 @@ export default function TripForm({
         newErrors.returnDate = 'Datum cesty zpět nemůže být v minulosti';
       }
     }
-    if (!form.transport) newErrors.transport = 'Vyberte typ dopravy';
+  if (!form.transport) newErrors.transport = 'Vyberte typ dopravy';
+  Object.entries(form.budget).forEach(([key, value]) => {
+    if (value && isNaN(Number(value))) {
+      if (!newErrors.budget) newErrors.budget = {};
+      newErrors.budget[key] = 'Musí být číslo';
+    }
+  });
     return newErrors;
   };
 
@@ -91,6 +115,25 @@ export default function TripForm({
       setErrors((prev) => ({ ...prev, [`link-${idx}`]: '' }));
   // odstraněna logika pro URL obrázků
   // odstraněna logika pro nahrávání obrázků
+    } else if (name === 'public') {
+      setForm((prev) => ({ ...prev, public: e.target.checked }));
+      setErrors((prev) => ({ ...prev, public: '' }));
+    } else if (name.startsWith('budget.')) {
+      const budgetKey = name.split('.')[1];
+      setForm((prev) => ({
+        ...prev,
+        budget: {
+          ...prev.budget,
+          [budgetKey]: value
+        }
+      }));
+      setErrors((prev) => ({
+        ...prev,
+        budget: {
+          ...(prev.budget || {}),
+          [budgetKey]: ''
+        }
+      }));
     } else {
       setForm((prev) => ({ ...prev, [name]: value }));
       setErrors((prev) => ({ ...prev, [name]: '' }));
@@ -114,6 +157,13 @@ export default function TripForm({
         destination: '',
         date: '',
         returnDate: '',
+        budget: {
+          accommodation: '',
+          transport: '',
+          food: '',
+          activities: '',
+          other: ''
+        },
         note: '',
         transport: '',
         activities: [''],
@@ -157,6 +207,53 @@ export default function TripForm({
       <div style={fieldStyle}>
         <input name="returnDate" type="date" value={form.returnDate} onChange={handleChange} min={form.date ? form.date : new Date().toISOString().split('T')[0]} style={errors.returnDate ? { ...inputStyle, ...errorInputStyle } : inputStyle} aria-invalid={!!errors.returnDate} aria-describedby={errors.returnDate ? 'returnDate-error' : undefined} />
         {errors.returnDate && <span style={errorTextStyle} id="returnDate-error">{errors.returnDate}</span>}
+      </div>
+
+      {/* Rozpočtová tabulka */}
+      <div style={fieldStyle}>
+        <label>Rozpočet cesty (Kč):</label>
+        <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '0.5rem' }}>
+          <thead>
+            <tr style={{ background: '#f5f5f5' }}>
+              <th style={{ textAlign: 'left', padding: '0.5rem', border: '1px solid #ccc' }}>Kategorie</th>
+              <th style={{ textAlign: 'left', padding: '0.5rem', border: '1px solid #ccc' }}>Částka (Kč)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Object.entries(form.budget).map(([key, value]) => (
+              <tr key={key}>
+                <td style={{ padding: '0.5rem', border: '1px solid #ccc' }}>{
+                  key === 'accommodation' ? 'Ubytování' :
+                  key === 'transport' ? 'Doprava' :
+                  key === 'food' ? 'Jídlo' :
+                  key === 'activities' ? 'Aktivity' :
+                  key === 'other' ? 'Ostatní' : key
+                }</td>
+                <td style={{ padding: '0.5rem', border: '1px solid #ccc' }}>
+                  <input
+                    name={`budget.${key}`}
+                    type="number"
+                    min="0"
+                    step="1"
+                    value={value}
+                    onChange={handleChange}
+                    style={errors.budget && errors.budget[key] ? { ...inputStyle, ...errorInputStyle } : inputStyle}
+                    aria-invalid={!!(errors.budget && errors.budget[key])}
+                    aria-describedby={errors.budget && errors.budget[key] ? `budget-${key}-error` : undefined}
+                  />
+                  {errors.budget && errors.budget[key] && <span style={errorTextStyle} id={`budget-${key}-error`}>{errors.budget[key]}</span>}
+                </td>
+              </tr>
+            ))}
+            {/* Celkem */}
+            <tr style={{ background: '#eaf6ea', fontWeight: 'bold' }}>
+              <td style={{ padding: '0.5rem', border: '1px solid #ccc' }}>Celkem</td>
+              <td style={{ padding: '0.5rem', border: '1px solid #ccc' }}>
+                {Object.values(form.budget).reduce((sum, val) => sum + (Number(val) || 0), 0)} Kč
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       {/* Aktivity */}
@@ -242,9 +339,25 @@ export default function TripForm({
         {errors.transport && <span style={errorTextStyle} id="transport-error">{errors.transport}</span>}
       </div>
 
-      <button type="submit" style={isSubmitting ? { ...submitButtonStyle, ...disabledButtonStyle } : submitButtonStyle} disabled={isSubmitting}>
-        {isSubmitting ? 'Ukládání...' : editingTrip ? 'Uložit změny' : 'Přidat cestu'}
-      </button>
+      {/* Veřejná cesta */}
+      <div style={fieldStyle}>
+        <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <input
+            type="checkbox"
+            name="public"
+            checked={form.public}
+            onChange={handleChange}
+            style={{ width: 20, height: 20 }}
+          />
+          Veřejná cesta (sdílená pro ostatní)
+        </label>
+      </div>
+
+      <div style={{ position: 'sticky', bottom: 0, zIndex: 100, background: 'white', paddingTop: '1rem', borderTop: '1px solid #eee', boxShadow: '0 -2px 8px rgba(0,0,0,0.08)' }}>
+        <button type="submit" style={isSubmitting ? { ...submitButtonStyle, ...disabledButtonStyle, width: '100%' } : { ...submitButtonStyle, width: '100%' }} disabled={isSubmitting}>
+          {isSubmitting ? 'Ukládání...' : editingTrip ? 'Uložit změny' : 'Přidat cestu'}
+        </button>
+      </div>
     </form>
   );
 }
@@ -258,12 +371,13 @@ const formStyle = {
   zIndex: 999,
   backgroundColor: 'white',
   padding: '1.5rem',
+  marginBottom: '50px', // zvýšeno pro lepší viditelnost tlačítka
   borderRadius: '12px',
   boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
   maxWidth: '800px', // širší formulář
   width: '600px',    // pevná šířka pro větší šířku
-  maxHeight: '95vh', // větší maximální výška okna
-  overflow: 'auto',  // scrollování při větším obsahu
+  maxHeight: '90vh', // výška formuláře na 90% okna
+  overflowY: 'auto',  // scrollování při větším obsahu
   margin: 0, // žádné centrování
   display: 'grid',
   gap: '1rem',

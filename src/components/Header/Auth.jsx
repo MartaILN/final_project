@@ -53,7 +53,7 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#a2d5c6] to-[#07689f] font-sans">
+  <div className="min-h-screen flex items-center justify-center font-sans">
   <div className="w-[400px] h-[350px] p-8 rounded-[10px] shadow-lg bg-[#f5f5dc] flex flex-col justify-center">
         <h2 className="text-2xl font-bold mb-6 text-center text-[#07689f]">Přihlášení</h2>
           <form onSubmit={handleAuth} className="w-full flex flex-col gap-4">
