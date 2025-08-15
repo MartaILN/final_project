@@ -82,7 +82,7 @@ export default function Auth() {
             <button
               type="submit"
               disabled={isLoading}
-              className={`w-[300px] h-[30px] rounded-[4px] text-base font-bold transition-colors duration-200 ${mode === 'login' ? 'bg-[#40a798] hover:bg-[#359184] text-white' : 'bg-[#07689f] hover:bg-[#43c6ac] text-white'} shadow ${isLoading ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'} border-0 mx-auto block mb-[10px]`}
+              className={`w-[300px] h-[30px] rounded-[4px] text-base font-bold transition-colors duration-200 ${mode === 'login' ? 'bg-[#40a798] hover:bg-[#359184] text-[#f5ecd7]' : 'bg-[#07689f] hover:bg-[#43c6ac] text-[#f5ecd7]'} shadow ${isLoading ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'} border-0 mx-auto block mb-[10px]`}
             >
               {isLoading ? 'Probíhá...' : mode === 'login' ? 'Přihlásit se' : 'Registrovat'}
             </button>

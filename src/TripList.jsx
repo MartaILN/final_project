@@ -15,77 +15,82 @@ export default function TripList({
     );
   }
 
-  // Seřadit podle datumu vzestupně (nejbližší nahoře)
-  const sortedTrips = [...trips].sort((a, b) => new Date(a.date) - new Date(b.date));
+  // Zachovat původní pořadí cest
+  const sortedTrips = trips;
 
   return (
-    <div style={{ paddingTop: 0 }}>
-      <ul style={{ listStyle: 'none', padding: 0 }}>
+    <div className="pt-0">
+      <ul className="list-none p-0">
         {sortedTrips.map((trip) => (
           <li
             key={trip.id}
-            style={{
-              marginBottom: '1rem',
-              borderBottom: '1px solid #ccc',
-              background: trip.done ? '#e6ffe6' : 'white',
-              opacity: 1,
-              transition: 'background 0.2s',
-            }}
+            className={`mb-[20px] rounded-[4px] shadow-lg transition-colors p-8 ${trip.done ? 'bg-[#e6ffe6]' : 'bg-[#fdf6e3]'} border border-[#e6dcc2]`}
           >
-            <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <input
-                type="checkbox"
-                checked={!!trip.done}
-                onChange={() => onToggleDone(trip.id, !trip.done)}
-                style={{
-                  marginRight: 8,
-                  accentColor: trip.done ? '#40a798' : undefined,
-                  width: 20,
-                  height: 20,
-                }}
-              />
-              <span>
-                {trip.date} – {trip.returnDate}<br />
-                {trip.start} → {trip.destination} ({trip.transport})
-                  {trip.budget && typeof trip.budget === 'object' && (
-                    <>
-                      <br />
-                      <strong>Rozpočet:</strong>
-                      <table style={{ width: '100%', borderCollapse: 'collapse', margin: '0.5rem 0' }}>
-                        <thead>
-                          <tr style={{ background: '#f5f5f5' }}>
-                            <th style={{ textAlign: 'left', padding: '0.3rem', border: '1px solid #ccc' }}>Kategorie</th>
-                            <th style={{ textAlign: 'left', padding: '0.3rem', border: '1px solid #ccc' }}>Částka (Kč)</th>
+            <div className="flex flex-col gap-5">
+              <div className="flex items-center gap-[20px] mb-2 p-[20px] bg-[#e3f2fd] rounded-[4px] relative">
+                <div className="flex items-center justify-between w-full">
+                  <div className="flex items-center gap-5 w-full">
+                    <div className="flex items-center w-full gap-5">
+                      <input
+                        type="checkbox"
+                        checked={!!trip.done}
+                        onChange={() => onToggleDone(trip.id, !trip.done)}
+                        className="w-8 h-8 accent-[#40a798] flex-shrink-0 align-middle"
+                      />
+                      <div className="flex-1">
+                        <div className="text-3xl font-extrabold text-[#07689f] mb-1 ml-[20px]">{trip.date} – {trip.returnDate}</div>
+                        <div className="text-lg text-[#07689f] ml-[20px]">{trip.start} <span className="mx-2">→</span> {trip.destination} <span className="italic">({trip.transport})</span></div>
+                      </div>
+                      <button
+                        onClick={() => onDelete(trip.id)}
+                        className="bg-[#fa8072] text-white px-3 py-1 rounded-[4px] text-sm flex items-center justify-center h-[30px] border-0 hover:bg-[#c0392b] transition-colors"
+                        aria-label="Smazat cestu"
+                      >
+                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <line x1="4" y1="4" x2="14" y2="14" stroke="#fdf6e3" strokeWidth="2" strokeLinecap="round" />
+                          <line x1="14" y1="4" x2="4" y2="14" stroke="#fdf6e3" strokeWidth="2" strokeLinecap="round" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {trip.budget && typeof trip.budget === 'object' && (
+                <div className="bg-[#fdf6e3] rounded-xl p-4 shadow-sm pl-[20px] pt-5">
+                  <div className="font-bold text-[#40a798] mb-2 flex items-center gap-2">Rozpočet:</div>
+                  <table className="w-1/2 border-collapse text-base pl-[75px]">
+                    <thead>
+                      <tr className="bg-[#f5f5f5]">
+                        <th className="text-left p-2 border border-[#ccc]">Kategorie</th>
+                        <th className="text-left p-2 border border-[#ccc]">Částka (Kč)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {Object.entries(trip.budget).map(([key, value]) => (
+                        value ? (
+                          <tr key={key}>
+                            <td className="p-2 border border-[#ccc]">{
+                              key === 'accommodation' ? 'Ubytování' :
+                              key === 'transport' ? 'Doprava' :
+                              key === 'food' ? 'Jídlo' :
+                              key === 'activities' ? 'Aktivity' :
+                              key === 'other' ? 'Ostatní' : key
+                            }</td>
+                            <td className="p-2 border border-[#ccc]">{value} Kč</td>
                           </tr>
-                        </thead>
-                        <tbody>
-                          {Object.entries(trip.budget).map(([key, value]) => (
-                            value ? (
-                              <tr key={key}>
-                                <td style={{ padding: '0.3rem', border: '1px solid #ccc' }}>{
-                                  key === 'accommodation' ? 'Ubytování' :
-                                  key === 'transport' ? 'Doprava' :
-                                  key === 'food' ? 'Jídlo' :
-                                  key === 'activities' ? 'Aktivity' :
-                                  key === 'other' ? 'Ostatní' : key
-                                }</td>
-                                <td style={{ padding: '0.3rem', border: '1px solid #ccc' }}>{value} Kč</td>
-                              </tr>
-                            ) : null
-                          ))}
-                          {/* Celkem */}
-                          <tr style={{ background: '#eaf6ea', fontWeight: 'bold' }}>
-                            <td style={{ padding: '0.3rem', border: '1px solid #ccc' }}>Celkem</td>
-                            <td style={{ padding: '0.3rem', border: '1px solid #ccc' }}>
-                              {Object.values(trip.budget).reduce((sum, val) => sum + (Number(val) || 0), 0)} Kč
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </>
-                  )}
-              </span>
-            </label>
+                        ) : null
+                      ))}
+                      {/* Celkem */}
+                      <tr className="bg-[#eaf6ea] font-bold">
+                        <td className="p-2 border border-[#ccc]">Celkem</td>
+                        <td className="p-2 border border-[#ccc]">
+                          {Object.values(trip.budget).reduce((sum, val) => sum + (Number(val) || 0), 0)} Kč
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              )}
             {(() => {
               let activities = [];
               let links = [];
@@ -99,121 +104,89 @@ export default function TripList({
               } else if (typeof trip.links === 'string' && trip.links) {
                 try { links = JSON.parse(trip.links); } catch {}
               }
-              // Filtrovat pouze ne-prázdné aktivity a odkazy
               const filteredActivities = activities.filter(a => a && a.trim() !== '');
               const filteredLinks = links.filter(l => l && l.trim() !== '');
-              // Propojit podle indexu a zobrazit zbylé odkazy samostatně
-              if (filteredActivities.length > 0 || filteredLinks.length > 0) {
-                return (
-                  <div style={{ margin: '0.5rem 0' }}>
-                    {filteredActivities.length > 0 && (
+              return (
+                <div className="px-6 pb-2">
+                  {filteredActivities.length > 0 && (
+                    <div className="mb-1 pl-[20px] mt-5">
+                      <span className="font-bold">Aktivity:</span>
+                      <ul className="ml-5 list-disc">
+                        {filteredActivities.map((a, i) => (
+                          <li key={i} className="mb-1">
+                            <span>{a}</span>
+                            {filteredLinks[i] && (
+                              <a href={filteredLinks[i]} target="_blank" rel="noopener noreferrer" className="text-[#07689f] ml-2 underline">[odkaz]</a>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {filteredLinks.length > filteredActivities.length && (
+                    <div className="mb-1 pl-[20px]">
+                      <span className="font-bold">Další odkazy:</span>
+                      <ul className="ml-5 list-disc">
+                        {filteredLinks.slice(filteredActivities.length).map((l, i) => (
+                          <li key={i} className="mb-1">
+                            <a href={l} target="_blank" rel="noopener noreferrer" className="text-[#07689f] underline">{l}</a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {trip.note && (
+                    <div className="mt-2 break-words whitespace-pre-line pl-[20px]">
+                      <span className="font-bold">Poznámka:</span> {trip.note}
+                    </div>
+                  )}
+                  <div className="flex gap-2 mt-3 mb-2">
+                    <button
+                      onClick={() => onEdit(trip)}
+                      className="bg-[#07689f] text-white rounded-md px-5 py-1 font-bold hover:bg-[#359184] transition-colors"
+                    >Upravit</button>
+                    {trip.public === true && (
                       <>
-                        <strong>Aktivity:</strong>
-                        <ul style={{ margin: 0, paddingLeft: '1.2rem' }}>
-                          {filteredActivities.map((a, i) => (
-                            <li key={i}>
-                              {a}
-                              {filteredLinks[i] && (
-                                <>
-                                  {' '}
-                                  <a href={filteredLinks[i]} target="_blank" rel="noopener noreferrer" style={{ color: '#07689f', marginLeft: 8 }}>
-                                    [odkaz]
-                                  </a>
-                                </>
-                              )}
-                            </li>
-                          ))}
-                        </ul>
-                      </>
-                    )}
-                    {/* Zbylé odkazy bez aktivit */}
-                    {filteredLinks.length > filteredActivities.length && (
-                      <>
-                        <strong>Další odkazy:</strong>
-                        <ul style={{ margin: 0, paddingLeft: '1.2rem' }}>
-                          {filteredLinks.slice(filteredActivities.length).map((l, i) => (
-                            <li key={i}><a href={l} target="_blank" rel="noopener noreferrer">{l}</a></li>
-                          ))}
-                        </ul>
+                        <button
+                          onClick={() => setShowEmailInputId(trip.id)}
+                          className="bg-[#40a798] text-white rounded-md px-5 py-1 font-bold hover:bg-[#359184] transition-colors"
+                        >Sdílet e-mailem</button>
+                        {showEmailInputId === trip.id && (
+                          <div className="mt-2 flex flex-col gap-2">
+                            <input
+                              type="email"
+                              placeholder="Zadejte e-mailovou adresu"
+                              value={emailInput}
+                              onChange={e => setEmailInput(e.target.value)}
+                              className="p-2 rounded-md border border-[#ccc] mr-2 w-[250px]"
+                            />
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => {
+                                  const url = `${window.location.origin}/trip/${trip.id}`;
+                                  const subject = encodeURIComponent('Sdílení cesty');
+                                  const body = encodeURIComponent(`Podívej se na tuto cestu: ${url}`);
+                                  window.location.href = `mailto:${emailInput}?subject=${subject}&body=${body}`;
+                                  setShowEmailInputId(null);
+                                  setEmailInput('');
+                                }}
+                                className="bg-[#40a798] text-white rounded-md px-4 py-1 font-bold hover:bg-[#359184] transition-colors"
+                                disabled={!emailInput}
+                              >Odeslat</button>
+                              <button
+                                onClick={() => { setShowEmailInputId(null); setEmailInput(''); }}
+                                className="bg-[#e74c3c] text-white rounded-md px-4 py-1 font-bold hover:bg-[#c0392b] transition-colors"
+                              >Zrušit</button>
+                            </div>
+                          </div>
+                        )}
                       </>
                     )}
                   </div>
-                );
-              }
-              return null;
+                </div>
+              );
             })()}
-            {trip.note && (
-              <div style={{ wordBreak: 'break-word', whiteSpace: 'pre-line', overflowWrap: 'anywhere' }}>
-                <strong>Poznámka:</strong> {trip.note}
               </div>
-            )}
-            <button
-              onClick={() => onEdit(trip)}
-              style={{
-                background: '#07689f',
-                color: 'white',
-                border: 'none',
-                borderRadius: 6,
-                padding: '0.4rem 1rem',
-                marginRight: '0.5rem',
-                cursor: 'pointer',
-                fontWeight: 'bold'
-              }}
-            >
-              Upravit
-            </button>
-            <button
-              onClick={() => onDelete(trip.id)}
-              style={{
-                background: '#e74c3c',
-                color: 'white',
-                border: 'none',
-                borderRadius: 6,
-                padding: '0.4rem 1rem',
-                marginRight: '0.5rem',
-                cursor: 'pointer',
-                fontWeight: 'bold'
-              }}
-            >
-              Smazat
-            </button>
-            {trip.public === true && (
-              <>
-                <button
-                  onClick={() => setShowEmailInputId(trip.id)}
-                  style={{ background: '#40a798', color: 'white', border: 'none', borderRadius: 6, padding: '0.4rem 1rem', cursor: 'pointer', fontWeight: 'bold', marginRight: '0.5rem' }}
-                >
-                  Sdílet e-mailem
-                </button>
-                {showEmailInputId === trip.id && (
-                  <div style={{ margin: '0.5rem 0' }}>
-                    <input
-                      type="email"
-                      placeholder="Zadejte e-mailovou adresu"
-                      value={emailInput}
-                      onChange={e => setEmailInput(e.target.value)}
-                      style={{ padding: '0.4rem', borderRadius: 6, border: '1px solid #ccc', marginRight: '0.5rem' }}
-                    />
-                    <button
-                      onClick={() => {
-                        const url = `${window.location.origin}/trip/${trip.id}`;
-                        const subject = encodeURIComponent('Sdílení cesty');
-                        const body = encodeURIComponent(`Podívej se na tuto cestu: ${url}`);
-                        window.location.href = `mailto:${emailInput}?subject=${subject}&body=${body}`;
-                        setShowEmailInputId(null);
-                        setEmailInput('');
-                      }}
-                      style={{ background: '#40a798', color: 'white', border: 'none', borderRadius: 6, padding: '0.4rem 1rem', cursor: 'pointer', fontWeight: 'bold' }}
-                      disabled={!emailInput}
-                    >Odeslat</button>
-                    <button
-                      onClick={() => { setShowEmailInputId(null); setEmailInput(''); }}
-                      style={{ background: '#e74c3c', color: 'white', border: 'none', borderRadius: 6, padding: '0.4rem 1rem', cursor: 'pointer', fontWeight: 'bold', marginLeft: '0.5rem' }}
-                    >Zrušit</button>
-                  </div>
-                )}
-              </>
-            )}
           </li>
         ))}
       </ul>
