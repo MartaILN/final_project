@@ -88,35 +88,59 @@ export default function TripList({
             </label>
             {(() => {
               let activities = [];
+              let links = [];
               if (Array.isArray(trip.activities)) {
                 activities = trip.activities;
               } else if (typeof trip.activities === 'string' && trip.activities) {
                 try { activities = JSON.parse(trip.activities); } catch {}
               }
-              return activities.length > 0 ? (
-                <div style={{ margin: '0.5rem 0' }}>
-                  <strong>Aktivity:</strong>
-                  <ul style={{ margin: 0, paddingLeft: '1.2rem' }}>
-                    {activities.map((a, i) => a && <li key={i}>{a}</li>)}
-                  </ul>
-                </div>
-              ) : null;
-            })()}
-            {(() => {
-              let links = [];
               if (Array.isArray(trip.links)) {
                 links = trip.links;
               } else if (typeof trip.links === 'string' && trip.links) {
                 try { links = JSON.parse(trip.links); } catch {}
               }
-              return links.length > 0 ? (
-                <div style={{ margin: '0.5rem 0' }}>
-                  <strong>Odkazy:</strong>
-                  <ul style={{ margin: 0, paddingLeft: '1.2rem' }}>
-                    {links.map((l, i) => l && <li key={i}><a href={l} target="_blank" rel="noopener noreferrer">{l}</a></li>)}
-                  </ul>
-                </div>
-              ) : null;
+              // Filtrovat pouze ne-prázdné aktivity a odkazy
+              const filteredActivities = activities.filter(a => a && a.trim() !== '');
+              const filteredLinks = links.filter(l => l && l.trim() !== '');
+              // Propojit podle indexu a zobrazit zbylé odkazy samostatně
+              if (filteredActivities.length > 0 || filteredLinks.length > 0) {
+                return (
+                  <div style={{ margin: '0.5rem 0' }}>
+                    {filteredActivities.length > 0 && (
+                      <>
+                        <strong>Aktivity:</strong>
+                        <ul style={{ margin: 0, paddingLeft: '1.2rem' }}>
+                          {filteredActivities.map((a, i) => (
+                            <li key={i}>
+                              {a}
+                              {filteredLinks[i] && (
+                                <>
+                                  {' '}
+                                  <a href={filteredLinks[i]} target="_blank" rel="noopener noreferrer" style={{ color: '#07689f', marginLeft: 8 }}>
+                                    [odkaz]
+                                  </a>
+                                </>
+                              )}
+                            </li>
+                          ))}
+                        </ul>
+                      </>
+                    )}
+                    {/* Zbylé odkazy bez aktivit */}
+                    {filteredLinks.length > filteredActivities.length && (
+                      <>
+                        <strong>Další odkazy:</strong>
+                        <ul style={{ margin: 0, paddingLeft: '1.2rem' }}>
+                          {filteredLinks.slice(filteredActivities.length).map((l, i) => (
+                            <li key={i}><a href={l} target="_blank" rel="noopener noreferrer">{l}</a></li>
+                          ))}
+                        </ul>
+                      </>
+                    )}
+                  </div>
+                );
+              }
+              return null;
             })()}
             {trip.note && (
               <div style={{ wordBreak: 'break-word', whiteSpace: 'pre-line', overflowWrap: 'anywhere' }}>

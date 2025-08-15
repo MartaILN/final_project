@@ -168,6 +168,7 @@ export default function TripForm({
         transport: '',
         activities: [''],
         links: [''],
+        public: false,
       });
       setErrors({});
     } catch (error) {
@@ -178,77 +179,80 @@ export default function TripForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} style={formStyle}>
-      <div style={topBarStyle}>
-        <span style={userStyle}>{user?.email}</span>
+  <div className="fixed top-[115px] left-[50px] z-[999] bg-[#fdf6e3] border border-[#e6dcc2] rounded-[5px] shadow-lg max-w-[800px] w-[600px] max-h-[90vh] overflow-y-auto p-2 pt-[20px] pl-[75px] pr-[75px] pb-[30px]">
+  <form onSubmit={handleSubmit} className="bg-white p-6 mb-12 rounded-xl w-full grid gap-[10px] font-sans">
+      <div className="flex justify-between items-center mb-4">
+        <span className="text-[#07689f] font-bold text-base">{user?.email}</span>
       </div>
-      <h2 style={titleStyle}>{editingTrip ? 'Upravit cestu' : 'Přidat novou cestu'}</h2>
-      {errors.submit && <div style={errorStyle}>{errors.submit}</div>}
+      <h2 className="text-center text-[#07689f] mb-4 text-xl font-bold">{editingTrip ? 'Upravit cestu' : 'Přidat novou cestu'}</h2>
+      {errors.submit && <div className="text-[#e74c3c] text-center text-sm mb-4">{errors.submit}</div>}
 
       {/* Start */}
-      <div style={fieldStyle}>
-        <input name="start" placeholder="Start" value={form.start} onChange={handleChange} style={errors.start ? { ...inputStyle, ...errorInputStyle } : inputStyle} aria-invalid={!!errors.start} aria-describedby={errors.start ? 'start-error' : undefined} />
-        {errors.start && <span style={errorTextStyle} id="start-error">{errors.start}</span>}
+  <div className="flex flex-col gap-[10px]">
+  <input name="start" placeholder="Start" value={form.start} onChange={handleChange} className={`h-[30px] w-[350px] p-3 rounded-[4px] border text-base transition-colors ${errors.start ? 'border-[#e74c3c] bg-[#fff5f5]' : 'border-[#ccc]'}`} aria-invalid={!!errors.start} aria-describedby={errors.start ? 'start-error' : undefined} />
+        {errors.start && <span className="text-[#e74c3c] text-sm mt-1" id="start-error">{errors.start}</span>}
       </div>
 
       {/* Cíl */}
-      <div style={fieldStyle}>
-        <input name="destination" placeholder="Cíl" value={form.destination} onChange={handleChange} style={errors.destination ? { ...inputStyle, ...errorInputStyle } : inputStyle} aria-invalid={!!errors.destination} aria-describedby={errors.destination ? 'destination-error' : undefined} />
-        {errors.destination && <span style={errorTextStyle} id="destination-error">{errors.destination}</span>}
+  <div className="flex flex-col gap-[10px]">
+  <input name="destination" placeholder="Cíl" value={form.destination} onChange={handleChange} className={`h-[30px] w-[350px] p-3 rounded-[4px] border text-base transition-colors ${errors.destination ? 'border-[#e74c3c] bg-[#fff5f5]' : 'border-[#ccc]'}`} aria-invalid={!!errors.destination} aria-describedby={errors.destination ? 'destination-error' : undefined} />
+        {errors.destination && <span className="text-[#e74c3c] text-sm mt-1" id="destination-error">{errors.destination}</span>}
       </div>
 
       {/* Termín tam */}
-      <div style={fieldStyle}>
-        <input name="date" type="date" value={form.date} onChange={handleChange} style={errors.date ? { ...inputStyle, ...errorInputStyle } : inputStyle} aria-invalid={!!errors.date} aria-describedby={errors.date ? 'date-error' : undefined} />
-        {errors.date && <span style={errorTextStyle} id="date-error">{errors.date}</span>}
+  <div className="flex flex-col gap-[10px]">
+  <input name="date" type="date" value={form.date} onChange={handleChange} className={`h-[30px] w-[350px] p-3 rounded-[4px] border text-base transition-colors ${errors.date ? 'border-[#e74c3c] bg-[#fff5f5]' : 'border-[#ccc]'}`} aria-invalid={!!errors.date} aria-describedby={errors.date ? 'date-error' : undefined} />
+        {errors.date && <span className="text-[#e74c3c] text-sm mt-1" id="date-error">{errors.date}</span>}
       </div>
 
       {/* Termín zpět */}
-      <div style={fieldStyle}>
-        <input name="returnDate" type="date" value={form.returnDate} onChange={handleChange} min={form.date ? form.date : new Date().toISOString().split('T')[0]} style={errors.returnDate ? { ...inputStyle, ...errorInputStyle } : inputStyle} aria-invalid={!!errors.returnDate} aria-describedby={errors.returnDate ? 'returnDate-error' : undefined} />
-        {errors.returnDate && <span style={errorTextStyle} id="returnDate-error">{errors.returnDate}</span>}
+  <div className="flex flex-col gap-[10px]">
+  <input name="returnDate" type="date" value={form.returnDate} onChange={handleChange} min={form.date ? form.date : new Date().toISOString().split('T')[0]} className={`h-[30px] w-[350px] p-3 rounded-[4px] border text-base transition-colors ${errors.returnDate ? 'border-[#e74c3c] bg-[#fff5f5]' : 'border-[#ccc]'}`} aria-invalid={!!errors.returnDate} aria-describedby={errors.returnDate ? 'returnDate-error' : undefined} />
+        {errors.returnDate && <span className="text-[#e74c3c] text-sm mt-1" id="returnDate-error">{errors.returnDate}</span>}
       </div>
 
       {/* Rozpočtová tabulka */}
-      <div style={fieldStyle}>
+  <div className="flex flex-col gap-[10px]">
         <label>Rozpočet cesty (Kč):</label>
-        <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '0.5rem' }}>
+        <table className="w-full border-collapse mb-2">
           <thead>
-            <tr style={{ background: '#f5f5f5' }}>
-              <th style={{ textAlign: 'left', padding: '0.5rem', border: '1px solid #ccc' }}>Kategorie</th>
-              <th style={{ textAlign: 'left', padding: '0.5rem', border: '1px solid #ccc' }}>Částka (Kč)</th>
+            <tr className="bg-[#f5f5f5]">
+              <th className="text-left p-2 border border-[#ccc]">Kategorie</th>
+              <th className="text-left p-2 border border-[#ccc]">Částka (Kč)</th>
             </tr>
           </thead>
           <tbody>
             {Object.entries(form.budget).map(([key, value]) => (
               <tr key={key}>
-                <td style={{ padding: '0.5rem', border: '1px solid #ccc' }}>{
+                <td className="p-2 border border-[#ccc]">{
                   key === 'accommodation' ? 'Ubytování' :
                   key === 'transport' ? 'Doprava' :
                   key === 'food' ? 'Jídlo' :
                   key === 'activities' ? 'Aktivity' :
                   key === 'other' ? 'Ostatní' : key
                 }</td>
-                <td style={{ padding: '0.5rem', border: '1px solid #ccc' }}>
-                  <input
-                    name={`budget.${key}`}
-                    type="number"
-                    min="0"
-                    step="1"
-                    value={value}
-                    onChange={handleChange}
-                    style={errors.budget && errors.budget[key] ? { ...inputStyle, ...errorInputStyle } : inputStyle}
-                    aria-invalid={!!(errors.budget && errors.budget[key])}
-                    aria-describedby={errors.budget && errors.budget[key] ? `budget-${key}-error` : undefined}
-                  />
-                  {errors.budget && errors.budget[key] && <span style={errorTextStyle} id={`budget-${key}-error`}>{errors.budget[key]}</span>}
+                <td className="p-2 border border-[#ccc]">
+                  <div className="flex flex-col gap-[10px]">
+                    <input
+                      name={`budget.${key}`}
+                      type="number"
+                      min="0"
+                      step="1"
+                      value={value}
+                      onChange={handleChange}
+                      className={`h-[30px] w-[350px] p-3 rounded-[4px] border text-base transition-colors ${errors.budget && errors.budget[key] ? 'border-[#e74c3c] bg-[#fff5f5]' : 'border-[#ccc]'}`}
+                      aria-invalid={!!(errors.budget && errors.budget[key])}
+                      aria-describedby={errors.budget && errors.budget[key] ? `budget-${key}-error` : undefined}
+                    />
+                    {errors.budget && errors.budget[key] && <span className="text-[#e74c3c] text-sm mt-1" id={`budget-${key}-error`}>{errors.budget[key]}</span>}
+                  </div>
                 </td>
               </tr>
             ))}
             {/* Celkem */}
-            <tr style={{ background: '#eaf6ea', fontWeight: 'bold' }}>
-              <td style={{ padding: '0.5rem', border: '1px solid #ccc' }}>Celkem</td>
-              <td style={{ padding: '0.5rem', border: '1px solid #ccc' }}>
+            <tr className="bg-[#eaf6ea] font-bold">
+              <td className="p-2 border border-[#ccc]">Celkem</td>
+              <td className="p-2 border border-[#ccc]">
                 {Object.values(form.budget).reduce((sum, val) => sum + (Number(val) || 0), 0)} Kč
               </td>
             </tr>
@@ -257,218 +261,103 @@ export default function TripForm({
       </div>
 
       {/* Aktivity */}
-      <div style={fieldStyle}>
+  <div className="flex flex-col gap-[10px]">
         <label>Aktivity:</label>
         {form.activities.map((activity, idx) => (
-          <div key={idx} style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-            <input name={`activity-${idx}`} placeholder={`Aktivita ${idx + 1}`} value={activity} onChange={handleChange} style={inputStyle} />
-            <button type="button" style={{ ...submitButtonStyle, padding: '0.3rem 0.7rem', fontSize: '0.9rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => { setForm((prev) => ({ ...prev, activities: prev.activities.filter((_, i) => i !== idx) })); }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="3" y="6" width="18" height="14" rx="2" fill="#e74c3c" />
-                <path d="M9 10v6M12 10v6M15 10v6" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
-                <path d="M5 6V4a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v2" stroke="#e74c3c" strokeWidth="2" strokeLinecap="round" />
-              </svg>
+          <div key={idx} className="flex gap-[10px] items-center">
+            <input name={`activity-${idx}`} placeholder={`Aktivita ${idx + 1}`} value={activity} onChange={handleChange} className="h-[30px] w-[350px] p-3 rounded-[4px] border border-[#ccc] text-base" />
+            <button type="button" className="bg-[#fa8072] text-white px-3 py-1 rounded-[4px] text-sm flex items-center justify-center h-[30px] border-0" onClick={() => { setForm((prev) => ({ ...prev, activities: prev.activities.filter((_, i) => i !== idx) })); }}>
+              {/* Ikona křížek (X) světle béžová */}
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <line x1="4" y1="4" x2="14" y2="14" stroke="#fdf6e3" strokeWidth="2" strokeLinecap="round" />
+    <line x1="14" y1="4" x2="4" y2="14" stroke="#fdf6e3" strokeWidth="2" strokeLinecap="round" />
+  </svg>
             </button>
           </div>
         ))}
-        <button type="button" style={{ ...submitButtonStyle, backgroundColor: '#07689f', marginTop: '0.5rem' }} onClick={() => { setForm((prev) => ({ ...prev, activities: [...prev.activities, ''] })); }}>Přidat aktivitu</button>
+  <button type="button" className="bg-[#07689f] text-[#f5ecd7] font-semibold text-3xl tracking-wide px-3 py-2 rounded-[4px] mt-2 h-[30px] border-0" onClick={() => { setForm((prev) => ({ ...prev, activities: [...prev.activities, ''] })); }}>Přidat aktivitu</button>
       </div>
 
       {/* Odkazy Booking, Mapy.cz */}
-      <div style={fieldStyle}>
-        <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem', alignItems: 'center' }}>
+      <div className="flex flex-col gap-1">
+        <div className="flex gap-[20px] mt-2 items-center">
           <a href={`https://www.booking.com/searchresults.html?ss=${encodeURIComponent(form.destination)}`} target="_blank" rel="noopener noreferrer" title="Booking.com">
-            <svg width="100" height="32" viewBox="0 0 100 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect width="100" height="32" rx="8" fill="#003580"/>
-              <text x="50" y="21" textAnchor="middle" fontSize="18" fill="white" fontFamily="Arial" fontWeight="bold">Booking</text>
-            </svg>
+            <span className="inline-block bg-[#f5ecd7] text-[#003580] font-bold rounded-[4px] px-6 py-2 text-lg p-[5px]">Booking.com</span>
           </a>
           <a href={`https://mapy.cz/zakladni?query=${encodeURIComponent(form.destination)}`} target="_blank" rel="noopener noreferrer" title="Mapy.cz">
-            <svg width="100" height="32" viewBox="0 0 100 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect width="100" height="32" rx="8" fill="#4CAF50"/>
-              <text x="50" y="21" textAnchor="middle" fontSize="18" fill="white" fontFamily="Arial" fontWeight="bold">Mapy.cz</text>
-            </svg>
+            <span className="inline-block bg-[#f5ecd7] text-[#4CAF50] font-bold rounded-[4px] px-6 py-2 text-lg p-[5px]">Mapy.cz</span>
           </a>
         </div>
       </div>
 
-  {/* Možnost vložení vlastního odkazu */}
-      <div style={fieldStyle}>
+      {/* Možnost vložení vlastního odkazu */}
+      <div className="flex flex-col gap-[10px]">
         <label>Odkazy:</label>
         {form.links.map((link, idx) => (
-          <div key={idx} style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+          <div key={idx} className="flex gap-[10px] items-center">
             <input
               name={`link-${idx}`}
               placeholder={`Odkaz ${idx + 1} (např. Google Docs, itinerář)`}
               value={link}
               onChange={handleChange}
-              style={inputStyle}
+              className="h-[30px] w-[350px] p-3 rounded-[4px] border border-[#ccc] text-base"
             />
-            <button type="button" style={{ ...submitButtonStyle, padding: '0.3rem 0.7rem', fontSize: '0.9rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => {
+            <button type="button" className="bg-[#fa8072] text-white px-3 py-1 rounded-[4px] text-sm flex items-center justify-center h-[30px] border-0" onClick={() => {
               setForm((prev) => ({
                 ...prev,
                 links: prev.links.filter((_, i) => i !== idx)
               }));
             }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="3" y="6" width="18" height="14" rx="2" fill="#e74c3c" />
-                <path d="M9 10v6M12 10v6M15 10v6" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
-                <path d="M5 6V4a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v2" stroke="#e74c3c" strokeWidth="2" strokeLinecap="round" />
-              </svg>
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <line x1="4" y1="4" x2="14" y2="14" stroke="#fdf6e3" strokeWidth="2" strokeLinecap="round" />
+    <line x1="14" y1="4" x2="4" y2="14" stroke="#fdf6e3" strokeWidth="2" strokeLinecap="round" />
+  </svg>
             </button>
           </div>
         ))}
-        <button type="button" style={{ ...submitButtonStyle, backgroundColor: '#07689f', marginTop: '0.5rem' }} onClick={() => {
+        <button type="button" className="bg-[#07689f] text-[#f5ecd7] font-semibold text-3xl tracking-wide px-3 py-2 rounded-[4px] mt-2 h-[30px] border-0" onClick={() => {
           setForm((prev) => ({ ...prev, links: [...prev.links, ''] }));
-        }}>Přidat odkaz</button>
+        }}>
+          Přidat odkaz
+        </button>
       </div>
 
       {/* Poznámka */}
-      <div style={fieldStyle}>
-        <input name="note" placeholder="Poznámka (volitelné)" value={form.note} onChange={handleChange} style={inputStyle} />
+      <div className="flex flex-col gap-1">
+  <input name="note" placeholder="Poznámka (volitelné)" value={form.note} onChange={handleChange} className="h-[30px] w-[350px] p-3 rounded-[4px] border border-[#ccc] text-base" />
       </div>
 
       {/* Výběr transportu */}
-      <div style={fieldStyle}>
-        <select name="transport" value={form.transport} onChange={handleChange} style={errors.transport ? { ...inputStyle, ...errorInputStyle } : inputStyle} aria-invalid={!!errors.transport} aria-describedby={errors.transport ? 'transport-error' : undefined}>
+      <div className="flex flex-col gap-1">
+  <select name="transport" value={form.transport} onChange={handleChange} className={`h-[25px] p-3 rounded-[4px] border text-base transition-colors w-full ${errors.transport ? 'border-[#e74c3c] bg-[#fff5f5]' : 'border-[#ccc]'}`} aria-invalid={!!errors.transport} aria-describedby={errors.transport ? 'transport-error' : undefined}>
           <option value="">Vyberte typ dopravy</option>
           <option value="Auto">Auto</option>
           <option value="Vlak">Vlak</option>
           <option value="Letadlo">Letadlo</option>
         </select>
-        {errors.transport && <span style={errorTextStyle} id="transport-error">{errors.transport}</span>}
+        {errors.transport && <span className="text-[#e74c3c] text-sm mt-1" id="transport-error">{errors.transport}</span>}
       </div>
 
       {/* Veřejná cesta */}
-      <div style={fieldStyle}>
-        <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+      <div className="flex flex-col gap-1">
+        <label className="flex items-center gap-2">
           <input
             type="checkbox"
             name="public"
             checked={form.public}
             onChange={handleChange}
-            style={{ width: 20, height: 20 }}
+            className="w-5 h-5"
           />
           Veřejná cesta (sdílená pro ostatní)
         </label>
       </div>
 
-      <div style={{ position: 'sticky', bottom: 0, zIndex: 100, background: 'white', paddingTop: '1rem', borderTop: '1px solid #eee', boxShadow: '0 -2px 8px rgba(0,0,0,0.08)' }}>
-        <button type="submit" style={isSubmitting ? { ...submitButtonStyle, ...disabledButtonStyle, width: '100%' } : { ...submitButtonStyle, width: '100%' }} disabled={isSubmitting}>
+      <div className="sticky bottom-0 z-[100] bg-white pt-4 border-t border-[#eee] shadow-[0_-2px_8px_rgba(0,0,0,0.08)]">
+        <button type="submit" className={`bg-[#40a798] text-[#f5ecd7] font-semibold text-3xl tracking-wide p-3 rounded-[4px] w-full transition-colors h-[40px] border-0 ${isSubmitting ? 'bg-[#a0a0a0] cursor-not-allowed' : 'hover:bg-[#359184] hover:-translate-y-[1px]'}`} disabled={isSubmitting}>
           {isSubmitting ? 'Ukládání...' : editingTrip ? 'Uložit změny' : 'Přidat cestu'}
         </button>
       </div>
-    </form>
+      </form>
+    </div>
   );
 }
-
-// 🎨 Styly
-const formStyle = {
-  position: 'fixed',
-  top: 115, // výška headeru v px
-  left: 24, // více doleva, odsazení od levého okraje
-  right: 'auto', // zarovnání vlevo, ne na střed
-  zIndex: 999,
-  backgroundColor: 'white',
-  padding: '1.5rem',
-  marginBottom: '50px', // zvýšeno pro lepší viditelnost tlačítka
-  borderRadius: '12px',
-  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
-  maxWidth: '800px', // širší formulář
-  width: '600px',    // pevná šířka pro větší šířku
-  maxHeight: '90vh', // výška formuláře na 90% okna
-  overflowY: 'auto',  // scrollování při větším obsahu
-  margin: 0, // žádné centrování
-  display: 'grid',
-  gap: '1rem',
-  fontFamily: 'Arial, sans-serif',};
-
-const topBarStyle = {
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  marginBottom: '1rem',
-};
-
-const userStyle = {
-  color: '#07689f',
-  fontWeight: 'bold',
-  fontSize: '1rem',
-};
-
-const titleStyle = {
-  textAlign: 'center',
-  color: '#07689f',
-  marginBottom: '1rem',
-  fontSize: '1.5rem',
-  fontWeight: 'bold',
-};
-
-const fieldStyle = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '0.25rem',
-};
-
-const inputStyle = {
-  padding: '0.75rem',
-  borderRadius: '6px',
-  border: '1px solid #ccc',
-  fontSize: '1rem',
-  transition: 'border-color 0.3s ease',
-};
-
-const errorInputStyle = {
-  borderColor: '#e74c3c',
-  backgroundColor: '#fff5f5',
-};
-
-const errorTextStyle = {
-  color: '#e74c3c',
-  fontSize: '0.875rem',
-  marginTop: '0.25rem',
-};
-
-const errorStyle = {
-  color: '#e74c3c',
-  textAlign: 'center',
-  fontSize: '0.875rem',
-  marginBottom: '1rem',
-};
-
-const submitButtonStyle = {
-  backgroundColor: '#40a798',
-  color: 'white',
-  padding: '0.75rem',
-  border: 'none',
-  borderRadius: '6px',
-  fontSize: '1rem',
-  cursor: 'pointer',
-  transition: 'background-color 0.3s ease, transform 0.1s ease',
-  ':hover': {
-    backgroundColor: '#359184',
-    transform: 'translateY(-1px)',
-  },
-};
-
-const disabledButtonStyle = {
-  backgroundColor: '#a0a0a0',
-  cursor: 'not-allowed',
-  transform: 'none',
-};
-
-const logoutButtonStyle = {
-  backgroundColor: '#e74c3c',
-  color: 'white',
-  padding: '0.75rem',
-  border: 'none',
-  borderRadius: '6px',
-  fontSize: '1rem',
-  cursor: 'pointer',
-  marginLeft: '1rem',
-  transition: 'background-color 0.3s ease, transform 0.1s ease',
-  ':hover': {
-    backgroundColor: '#c0392b',
-    transform: 'translateY(-1px)',
-  },
-};
