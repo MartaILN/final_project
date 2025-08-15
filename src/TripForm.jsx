@@ -180,7 +180,7 @@ export default function TripForm({
 
   return (
   <div className="fixed top-[115px] left-[50px] z-[999] bg-[#fdf6e3] border border-[#e6dcc2] rounded-[5px] shadow-lg max-w-[800px] w-[600px] max-h-[90vh] overflow-y-auto p-2 pt-[20px] pl-[75px] pr-[75px] pb-[30px]">
-  <form onSubmit={handleSubmit} className="bg-white p-6 mb-12 rounded-xl w-full grid gap-[10px] font-sans">
+  <form onSubmit={handleSubmit} className="bg-white p-6 mb-12 rounded-xl w-full grid gap-[10px] font-sans pb-[20px] mb-[20px]">
       <div className="flex justify-between items-center mb-4">
         <span className="text-[#07689f] font-bold text-base">{user?.email}</span>
       </div>
@@ -282,7 +282,7 @@ export default function TripForm({
       <div className="flex flex-col gap-1">
         <div className="flex gap-[20px] mt-2 items-center">
           <a href={`https://www.booking.com/searchresults.html?ss=${encodeURIComponent(form.destination)}`} target="_blank" rel="noopener noreferrer" title="Booking.com">
-            <span className="inline-block bg-[#f5ecd7] text-[#003580] font-bold rounded-[4px] px-6 py-2 text-lg p-[5px]">Booking.com</span>
+            <span className="inline-block bg-[#f5ecd7] text-[#07689f] font-bold rounded-[4px] px-6 py-2 text-lg p-[5px]">Booking.com</span>
           </a>
           <a href={`https://mapy.cz/zakladni?query=${encodeURIComponent(form.destination)}`} target="_blank" rel="noopener noreferrer" title="Mapy.cz">
             <span className="inline-block bg-[#f5ecd7] text-[#4CAF50] font-bold rounded-[4px] px-6 py-2 text-lg p-[5px]">Mapy.cz</span>
@@ -329,10 +329,10 @@ export default function TripForm({
 
       {/* Výběr transportu */}
       <div className="flex flex-col gap-1">
-  <select name="transport" value={form.transport} onChange={handleChange} className={`h-[25px] p-3 rounded-[4px] border text-base transition-colors w-full ${errors.transport ? 'border-[#e74c3c] bg-[#fff5f5]' : 'border-[#ccc]'}`} aria-invalid={!!errors.transport} aria-describedby={errors.transport ? 'transport-error' : undefined}>
+        <select name="transport" value={form.transport} onChange={handleChange} className={`h-[25px] p-3 rounded-[4px] border text-base transition-colors w-full ${errors.transport ? 'border-[#e74c3c] bg-[#fff5f5]' : 'border-[#ccc]'}`} aria-invalid={!!errors.transport} aria-describedby={errors.transport ? 'transport-error' : undefined}>
           <option value="">Vyberte typ dopravy</option>
           <option value="Auto">Auto</option>
-          <option value="Vlak">Vlak</option>
+          <option value="MHD">MHD</option>
           <option value="Letadlo">Letadlo</option>
         </select>
         {errors.transport && <span className="text-[#e74c3c] text-sm mt-1" id="transport-error">{errors.transport}</span>}
@@ -352,7 +352,7 @@ export default function TripForm({
         </label>
       </div>
 
-      <div className="sticky bottom-0 z-[100] bg-white pt-4 border-t border-[#eee] shadow-[0_-2px_8px_rgba(0,0,0,0.08)]">
+      <div>
         <button type="submit" className={`bg-[#40a798] text-[#f5ecd7] font-semibold text-3xl tracking-wide p-3 rounded-[4px] w-full transition-colors h-[40px] border-0 ${isSubmitting ? 'bg-[#a0a0a0] cursor-not-allowed' : 'hover:bg-[#359184] hover:-translate-y-[1px]'}`} disabled={isSubmitting}>
           {isSubmitting ? 'Ukládání...' : editingTrip ? 'Uložit změny' : 'Přidat cestu'}
         </button>

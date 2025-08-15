@@ -41,6 +41,7 @@ function App() {
       supabase
         .from('trips')
         .select('*')
+        .order('id', { ascending: true })
         .then(({ data }) => setTrips(data || []));
     } else {
       setTrips([]);
@@ -73,7 +74,7 @@ function App() {
         return;
       }
     }
-    const { data, error: selectError } = await supabase.from('trips').select('*');
+  const { data, error: selectError } = await supabase.from('trips').select('*').order('id', { ascending: true });
     if (selectError) {
       alert('Chyba při načítání: ' + selectError.message);
       return;
@@ -88,8 +89,8 @@ function App() {
       alert('Chyba při změně stavu: ' + error.message);
       return;
     }
-    const { data } = await supabase.from('trips').select('*');
-    setTrips(data || []);
+  const { data } = await supabase.from('trips').select('*').order('id', { ascending: true });
+  setTrips(data || []);
   };
 
   // Smazání cesty
@@ -100,8 +101,8 @@ function App() {
       alert('Chyba při mazání: ' + error.message);
       return;
     }
-    const { data } = await supabase.from('trips').select('*');
-    setTrips(data || []);
+  const { data } = await supabase.from('trips').select('*').order('id', { ascending: true });
+  setTrips(data || []);
   };
 
   // Zahájení úpravy cesty

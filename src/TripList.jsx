@@ -7,6 +7,11 @@ export default function TripList({
 }) {
   const [showEmailInputId, setShowEmailInputId] = useState(null);
   const [emailInput, setEmailInput] = useState('');
+  const [sortBy, setSortBy] = useState('date');
+  const [sortOrder, setSortOrder] = useState('desc');
+  const [filterDone, setFilterDone] = useState('all');
+  const [filterTransport, setFilterTransport] = useState('all');
+  const [searchDestination, setSearchDestination] = useState('');
   if (!trips.length) {
     return (
       <div style={{ paddingTop: 8 }}>
@@ -15,16 +20,102 @@ export default function TripList({
     );
   }
 
-  // Zachovat původní pořadí cest
-  const sortedTrips = trips;
+  // Filtering logic
+  let filteredTrips = trips;
+  if (filterDone !== 'all') {
+    filteredTrips = filteredTrips.filter(trip => filterDone === 'done' ? trip.done : !trip.done);
+  }
+  if (filterTransport !== 'all') {
+    filteredTrips = filteredTrips.filter(trip => trip.transport === filterTransport);
+  }
+  if (searchDestination.trim() !== '') {
+    filteredTrips = filteredTrips.filter(trip => trip.destination && trip.destination.toLowerCase().includes(searchDestination.toLowerCase()));
+  }
+
+    // Sorting logic
+    const sortedTrips = [...filteredTrips].sort((a, b) => {
+      let valA, valB;
+      // Pokud je filtr 'vše' a sortBy je 'date', řaď pouze podle datumu
+      if (filterDone === 'all' && sortBy === 'date') {
+        valA = a.date;
+        valB = b.date;
+      } else {
+        switch (sortBy) {
+          case 'date':
+            valA = a.date;
+            valB = b.date;
+            break;
+          case 'done':
+            valA = a.done ? 1 : 0;
+            valB = b.done ? 1 : 0;
+            break;
+          case 'price':
+            valA = Object.values(a.budget || {}).reduce((sum, v) => sum + (Number(v) || 0), 0);
+            valB = Object.values(b.budget || {}).reduce((sum, v) => sum + (Number(v) || 0), 0);
+            break;
+          case 'transport':
+            valA = a.transport || '';
+            valB = b.transport || '';
+            break;
+          case 'destination':
+            valA = a.destination || '';
+            valB = b.destination || '';
+            break;
+          default:
+            valA = a.date;
+            valB = b.date;
+        }
+      }
+      if (valA < valB) return sortOrder === 'asc' ? -1 : 1;
+      if (valA > valB) return sortOrder === 'asc' ? 1 : -1;
+      return 0;
+    });
 
   return (
     <div className="pt-0">
+  <div className="w-full mb-8 p-5 border rounded-lg shadow flex flex-wrap gap-5 items-center bg-white justify-around sticky" style={{boxSizing: 'border-box', height: '40px', width: '96%', marginLeft: 'auto', top: '30px', zIndex: 10}}>
+        <label className="font-bold">Stav:
+          <select value={filterDone} onChange={e => setFilterDone(e.target.value)} className="ml-2 p-2 rounded border">
+            <option value="all">Vše</option>
+            <option value="done">Dokončené</option>
+            <option value="notdone">Nedokončené</option>
+          </select>
+        </label>
+        <label className="font-bold">Vyhledat destinaci:
+          <input
+            type="text"
+            value={searchDestination}
+            onChange={e => setSearchDestination(e.target.value)}
+            className="ml-2 p-2 rounded border"
+            placeholder="Zadejte destinaci..."
+          />
+        </label>
+        <label className="font-bold">Řadit podle:
+          <select value={sortBy} onChange={e => setSortBy(e.target.value)} className="ml-2 p-2 rounded border">
+            <option value="date">Datum</option>
+            <option value="price">Cena</option>
+          </select>
+        </label>
+        <label className="font-bold">Typ dopravy:
+          <select value={filterTransport} onChange={e => setFilterTransport(e.target.value)} className="ml-2 p-2 rounded border">
+            <option value="all">Vše</option>
+            <option value="Auto">Auto</option>
+            <option value="MHD">MHD</option>
+            <option value="Letadlo">Letadlo</option>
+          </select>
+        </label>
+        <label className="font-bold">Směr:
+          <select value={sortOrder} onChange={e => setSortOrder(e.target.value)} className="ml-2 p-2 rounded border">
+            <option value="asc">Vzestupně</option>
+            <option value="desc">Sestupně</option>
+          </select>
+        </label>
+      </div>
       <ul className="list-none p-0">
         {sortedTrips.map((trip) => (
           <li
             key={trip.id}
-            className={`mb-[20px] rounded-[4px] shadow-lg transition-colors p-8 ${trip.done ? 'bg-[#e6ffe6]' : 'bg-[#fdf6e3]'} border border-[#e6dcc2]`}
+            className={`mb-[20px] rounded-[4px] shadow-lg transition-colors p-8 ${trip.done ? 'bg-[#e6ffe6]' : 'bg-[#fdf6e3]'} border border-[#e6dcc2] mb-[20px]`}
           >
             <div className="flex flex-col gap-5">
               <div className="flex items-center gap-[20px] mb-2 p-[20px] bg-[#e3f2fd] rounded-[4px] relative">
@@ -56,9 +147,9 @@ export default function TripList({
                 </div>
               </div>
               {trip.budget && typeof trip.budget === 'object' && (
-                <div className="bg-[#fdf6e3] rounded-xl p-4 shadow-sm pl-[20px] pt-5">
+                <div className="bg-[#fdf6e3] rounded-xl p-4 shadow-sm pl-[20px] pt-5 mt-[20px]">
                   <div className="font-bold text-[#40a798] mb-2 flex items-center gap-2">Rozpočet:</div>
-                  <table className="w-1/2 border-collapse text-base pl-[75px]">
+                  <table className="w-1/2 border-collapse text-base pl-[75px] mt-[10px]">
                     <thead>
                       <tr className="bg-[#f5f5f5]">
                         <th className="text-left p-2 border border-[#ccc]">Kategorie</th>
@@ -109,14 +200,14 @@ export default function TripList({
               return (
                 <div className="px-6 pb-2">
                   {filteredActivities.length > 0 && (
-                    <div className="mb-1 pl-[20px] mt-5">
+                    <div className="mb-1 pl-[20px] mt-[20px]">
                       <span className="font-bold">Aktivity:</span>
-                      <ul className="ml-5 list-disc">
+                      <ul className="ml-5 list-disc mt-[10px]">
                         {filteredActivities.map((a, i) => (
                           <li key={i} className="mb-1">
                             <span>{a}</span>
                             {filteredLinks[i] && (
-                              <a href={filteredLinks[i]} target="_blank" rel="noopener noreferrer" className="text-[#07689f] ml-2 underline">[odkaz]</a>
+                              <a href={filteredLinks[i]} target="_blank" rel="noopener noreferrer" className="text-[#07689f] ml-[20px] underline">[odkaz]</a>
                             )}
                           </li>
                         ))}
@@ -126,7 +217,7 @@ export default function TripList({
                   {filteredLinks.length > filteredActivities.length && (
                     <div className="mb-1 pl-[20px]">
                       <span className="font-bold">Další odkazy:</span>
-                      <ul className="ml-5 list-disc">
+                      <ul className="ml-5 list-disc mt-[20px]">
                         {filteredLinks.slice(filteredActivities.length).map((l, i) => (
                           <li key={i} className="mb-1">
                             <a href={l} target="_blank" rel="noopener noreferrer" className="text-[#07689f] underline">{l}</a>
@@ -136,20 +227,20 @@ export default function TripList({
                     </div>
                   )}
                   {trip.note && (
-                    <div className="mt-2 break-words whitespace-pre-line pl-[20px]">
+                    <div className="mt-[20px] break-words whitespace-pre-line pl-[20px]">
                       <span className="font-bold">Poznámka:</span> {trip.note}
                     </div>
                   )}
-                  <div className="flex gap-2 mt-3 mb-2">
+                  <div className="flex gap-2 mt-[20px] mb-[20px]">
                     <button
                       onClick={() => onEdit(trip)}
-                      className="bg-[#07689f] text-white rounded-md px-5 py-1 font-bold hover:bg-[#359184] transition-colors"
+                      className="bg-[#07689f] text-[#f5ecd7] rounded-[4px] p-[5px] font-bold hover:bg-[#359184] transition-colors ml-[50px] border-0"
                     >Upravit</button>
                     {trip.public === true && (
                       <>
                         <button
                           onClick={() => setShowEmailInputId(trip.id)}
-                          className="bg-[#40a798] text-white rounded-md px-5 py-1 font-bold hover:bg-[#359184] transition-colors"
+                          className="bg-[#40a798] text-[#f5ecd7] rounded-[4px] p-[5px] font-bold hover:bg-[#359184] transition-colors ml-[50px] border-0"
                         >Sdílet e-mailem</button>
                         {showEmailInputId === trip.id && (
                           <div className="mt-2 flex flex-col gap-2">
