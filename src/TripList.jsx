@@ -7,11 +7,6 @@ export default function TripList({
 }) {
   const [showEmailInputId, setShowEmailInputId] = useState(null);
   const [emailInput, setEmailInput] = useState('');
-  const [sortBy, setSortBy] = useState('date');
-  const [sortOrder, setSortOrder] = useState('desc');
-  const [filterDone, setFilterDone] = useState('all');
-  const [filterTransport, setFilterTransport] = useState('all');
-  const [searchDestination, setSearchDestination] = useState('');
   if (!trips.length) {
     return (
       <div style={{ paddingTop: 8 }}>
@@ -20,99 +15,10 @@ export default function TripList({
     );
   }
 
-  // Filtering logic
-  let filteredTrips = trips;
-  if (filterDone !== 'all') {
-    filteredTrips = filteredTrips.filter(trip => filterDone === 'done' ? trip.done : !trip.done);
-  }
-  if (filterTransport !== 'all') {
-    filteredTrips = filteredTrips.filter(trip => trip.transport === filterTransport);
-  }
-  if (searchDestination.trim() !== '') {
-    filteredTrips = filteredTrips.filter(trip => trip.destination && trip.destination.toLowerCase().includes(searchDestination.toLowerCase()));
-  }
-
-    // Sorting logic
-    const sortedTrips = [...filteredTrips].sort((a, b) => {
-      let valA, valB;
-      // Pokud je filtr 'vše' a sortBy je 'date', řaď pouze podle datumu
-      if (filterDone === 'all' && sortBy === 'date') {
-        valA = a.date;
-        valB = b.date;
-      } else {
-        switch (sortBy) {
-          case 'date':
-            valA = a.date;
-            valB = b.date;
-            break;
-          case 'done':
-            valA = a.done ? 1 : 0;
-            valB = b.done ? 1 : 0;
-            break;
-          case 'price':
-            valA = Object.values(a.budget || {}).reduce((sum, v) => sum + (Number(v) || 0), 0);
-            valB = Object.values(b.budget || {}).reduce((sum, v) => sum + (Number(v) || 0), 0);
-            break;
-          case 'transport':
-            valA = a.transport || '';
-            valB = b.transport || '';
-            break;
-          case 'destination':
-            valA = a.destination || '';
-            valB = b.destination || '';
-            break;
-          default:
-            valA = a.date;
-            valB = b.date;
-        }
-      }
-      if (valA < valB) return sortOrder === 'asc' ? -1 : 1;
-      if (valA > valB) return sortOrder === 'asc' ? 1 : -1;
-      return 0;
-    });
-
   return (
     <div className="pt-0">
-  <div className="w-full mb-8 p-5 border rounded-lg shadow flex flex-wrap gap-5 items-center bg-white justify-around sticky" style={{boxSizing: 'border-box', height: '40px', width: '96%', marginLeft: 'auto', top: '30px', zIndex: 10}}>
-        <label className="font-bold">Stav:
-          <select value={filterDone} onChange={e => setFilterDone(e.target.value)} className="ml-2 p-2 rounded border">
-            <option value="all">Vše</option>
-            <option value="done">Dokončené</option>
-            <option value="notdone">Nedokončené</option>
-          </select>
-        </label>
-        <label className="font-bold">Vyhledat destinaci:
-          <input
-            type="text"
-            value={searchDestination}
-            onChange={e => setSearchDestination(e.target.value)}
-            className="ml-2 p-2 rounded border"
-            placeholder="Zadejte destinaci..."
-          />
-        </label>
-        <label className="font-bold">Řadit podle:
-          <select value={sortBy} onChange={e => setSortBy(e.target.value)} className="ml-2 p-2 rounded border">
-            <option value="date">Datum</option>
-            <option value="price">Cena</option>
-          </select>
-        </label>
-        <label className="font-bold">Typ dopravy:
-          <select value={filterTransport} onChange={e => setFilterTransport(e.target.value)} className="ml-2 p-2 rounded border">
-            <option value="all">Vše</option>
-            <option value="Auto">Auto</option>
-            <option value="MHD">MHD</option>
-            <option value="Letadlo">Letadlo</option>
-          </select>
-        </label>
-        <label className="font-bold">Směr:
-          <select value={sortOrder} onChange={e => setSortOrder(e.target.value)} className="ml-2 p-2 rounded border">
-            <option value="asc">Vzestupně</option>
-            <option value="desc">Sestupně</option>
-          </select>
-        </label>
-      </div>
       <ul className="list-none p-0">
-        {sortedTrips.map((trip) => (
+        {trips.map((trip) => (
           <li
             key={trip.id}
             className={`mb-[20px] rounded-[4px] shadow-lg transition-colors p-8 ${trip.done ? 'bg-[#e6ffe6]' : 'bg-[#fdf6e3]'} border border-[#e6dcc2] mb-[20px]`}
@@ -241,34 +147,41 @@ export default function TripList({
                         <button
                           onClick={() => setShowEmailInputId(trip.id)}
                           className="bg-[#40a798] text-[#f5ecd7] rounded-[4px] p-[5px] font-bold hover:bg-[#359184] transition-colors ml-[50px] border-0"
+                          style={{ marginRight: '20px' }}
                         >Sdílet e-mailem</button>
                         {showEmailInputId === trip.id && (
-                          <div className="mt-2 flex flex-col gap-2">
+                          <div className="mt-2 flex flex-row gap-2 items-center">
                             <input
                               type="email"
                               placeholder="Zadejte e-mailovou adresu"
                               value={emailInput}
                               onChange={e => setEmailInput(e.target.value)}
-                              className="p-2 rounded-md border border-[#ccc] mr-2 w-[250px]"
+                                className="p-[5px] rounded-[4px] border border-[#40a798] w-[180px] text-base focus:outline-none bg-white"
+                                style={{ height: '30px', marginRight: '10px' }}
                             />
-                            <div className="flex gap-2">
-                              <button
-                                onClick={() => {
-                                  const url = `${window.location.origin}/trip/${trip.id}`;
-                                  const subject = encodeURIComponent('Sdílení cesty');
-                                  const body = encodeURIComponent(`Podívej se na tuto cestu: ${url}`);
-                                  window.location.href = `mailto:${emailInput}?subject=${subject}&body=${body}`;
-                                  setShowEmailInputId(null);
-                                  setEmailInput('');
-                                }}
-                                className="bg-[#40a798] text-white rounded-md px-4 py-1 font-bold hover:bg-[#359184] transition-colors"
-                                disabled={!emailInput}
-                              >Odeslat</button>
-                              <button
-                                onClick={() => { setShowEmailInputId(null); setEmailInput(''); }}
-                                className="bg-[#e74c3c] text-white rounded-md px-4 py-1 font-bold hover:bg-[#c0392b] transition-colors"
-                              >Zrušit</button>
-                            </div>
+                            <button
+                              onClick={() => {
+                                const url = `${window.location.origin}/trip/${trip.id}`;
+                                const subject = encodeURIComponent('Sdílení cesty');
+                                const body = encodeURIComponent(`Podívej se na tuto cestu: ${url}`);
+                                window.location.href = `mailto:${emailInput}?subject=${subject}&body=${body}`;
+                                setShowEmailInputId(null);
+                                setEmailInput('');
+                              }}
+                              className={`rounded-[4px] p-[5px] font-bold transition-colors text-[#07689f] ${emailInput ? 'bg-[#f5ecd7] hover:bg-[#e6dcc2]' : 'bg-[#f5ecd7] cursor-not-allowed'}`}
+                                style={{ height: '30px', marginRight: '10px', border: '2px solid #40a798' }}
+                              disabled={!emailInput}
+                            >Odeslat</button>
+                            <button
+                              onClick={() => { setShowEmailInputId(null); setEmailInput(''); }}
+                              className="rounded-[4px] bg-[#fa8072] text-white hover:bg-[#c0392b] transition-colors flex items-center justify-center border-0"
+                              style={{ height: '30px', width: '30px', padding: '0', minWidth: '30px', border: 'none' }}
+                            >
+                              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', margin: 'auto' }}>
+                                <line x1="4" y1="4" x2="14" y2="14" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+                                <line x1="14" y1="4" x2="4" y2="14" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+                              </svg>
+                            </button>
                           </div>
                         )}
                       </>
